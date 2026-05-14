@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>SecuredSystems.in — Safety Intelligence for India's Gig Workers</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!-- React & ReactDOM & Babel -->
+  <script src="https://cdn.jsdelivr.net/npm/react@18.2.0/umd/react.development.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18.2.0/umd/react-dom.development.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@babel/standalone/babel.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      background: #06090F;
+      color: #E2E8F2;
+      font-family: 'IBM Plex Sans', sans-serif;
+    }
+    ::-webkit-scrollbar {
+      width: 5px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #06090F;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #172035;
+      border-radius: 3px;
+    }
+    button {
+      cursor: pointer;
+    }
+    a {
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel" data-presets="react">
+    // ─── REACT HOOKS ───────────────────────────────────────────────
+    const { useState, useEffect } = React;
+
+    // ─── THEME CONSTANTS (original dark theme) ──────────────────────
+    const C = {
+      bg: "#06090F",
+      surface: "#0B1120",
+      surfaceAlt: "#0E1628",
+      border: "#172035",
+      borderHi: "#1E2E4A",
+      accent: "#2563EB",
+      accentBright: "#3B82F6",
+      accentGlow: "rgba(37,99,235,0.12)",
+      steel: "#6B82A0",
+      steelHi: "#8FA3C0",
+      text: "#E2E8F2",
+      muted: "#7A90AA",
+      dim: "#3A506A",
+      danger: "#DC2626",
+      amber: "#D97706",
+      green: "#16A34A",
+      white: "#FFFFFF",
+    };
+
+    // ─── SEED DATA (all content – manual JSON, no admin) ────────────
+    const SEED_STATS = [
+      { id: 1, value: "12M+", label: "Gig Workers in India (FY2024-25)", source: "NITI Aayog" },
+      { id: 2, value: "90%", label: "Workforce operating informally — outside safety nets", source: "Ministry of Labour" },
+      { id: 3, value: "400+", label: "Worker deaths from workplace accidents in India (2024)", source: "IndustriALL" },
+      { id: 4, value: "23.5M", label: "Projected gig workers by 2029-30", source: "NITI Aayog" },
+      { id: 5, value: "₹0", label: "Average platform compensation to families after on-job fatalities", source: "Field Research" },
+      { id: 6, value: "1,109", label: "Avg annual factory deaths (2017–2020) — gig workers not counted", source: "DGFASLI" },
+    ];
+
+    const SEED_CASES = [
+      { id: 1, city: "Mumbai", title: "Delivery Rider Found Hours After Accident", date: "Mar 2025", desc: "A Swiggy delivery partner met with an accident in Andheri at 11 PM. No platform alert was triggered. His family found out 6 hours later when they called police.", tag: "INCIDENT" },
+      { id: 2, city: "Delhi", title: "Zomato Partner Robbed, Platform Unreachable", date: "Jan 2025", desc: "A delivery executive was robbed at knifepoint in South Delhi. He had no emergency protocol. The platform's helpline put him on hold for 22 minutes.", tag: "ROBBERY" },
+      { id: 3, city: "Bangalore", title: "Night-Shift Cab Driver Disappears for 14 Hours", date: "Feb 2025", desc: "An Ola driver went off-grid during a late-night pickup in Whitefield. His family had no tracking access. He was found at a hospital — had suffered a cardiac event alone.", tag: "MEDICAL" },
+    ];
+
+    const SEED_NEWS = [
+      { id: 1, title: "Gig Workers' Strike Reveals Intolerable Working Conditions", source: "The Hindu", date: "Jan 2026", url: "#", summary: "First nationwide collective assertion by gig workers demanding dignity, regulation, and accountability in India's platform economy." },
+      { id: 2, title: "Union Budget 2025: Identity Cards & Healthcare for Gig Workers", source: "Drishti IAS", date: "Feb 2025", url: "#", summary: "Union Budget 2025 introduces identity cards and healthcare benefits for gig workers, but enforceable safety standards remain absent." },
+      { id: 3, title: "Karnataka Introduces Gig Workers Insurance Scheme", source: "PMC", date: "2024", url: "#", summary: "Karnataka's Platform-Based Gig Workers Bill mandates health, life, and disability insurance — a model other states are yet to follow." },
+    ];
+
+    const SEED_BLOGS = [
+      {
+        id: 1,
+        slug: "invisible-workforce",
+        tag: "SAFETY",
+        title: "India's Invisible Workforce: Why Gig Workers Die Alone",
+        date: "May 2025",
+        readTime: "6 min read",
+        author: "Secured Systems Editorial",
+        body: `Every morning, 12 million Indians strap on a helmet, open an app, and disappear into the city. They carry your food. They drive you home. They deliver the package you forgot you ordered.
+
+And when something goes wrong — an accident, a robbery, a medical emergency — they handle it alone.
+
+There is no protocol. No alert. No platform-side response. Just a worker, a phone, and the hope that someone notices.
+
+**The Numbers Don't Lie**
+
+India reported over 400 worker deaths from workplace accidents in 2024 alone. These are the ones that got counted — formal sector workers in registered facilities. Gig workers, operating outside these systems, don't appear in the data at all.
+
+The Ministry of Labour's statistics stop at factory gates. The delivery executive who collapsed on a highway in Pune, the cab driver who was carjacked outside Gurugram — they're statistical ghosts.
+
+**Platforms Know. Platforms Don't Act.**
+
+Every major gig platform has real-time GPS data on their workers. They know where each worker is, at every minute. They have the infrastructure to detect an anomaly — a worker stationary for too long, a route deviation, a sudden stop.
+
+They choose not to build safety systems on top of this data because safety costs money. Liability costs more. So they've made a calculated decision: let workers self-manage risk.
+
+**What Sentinel Changes**
+
+Sentinel runs passively. Workers don't have to press a button or remember to check in. The system watches quietly — and only surfaces when something looks wrong.
+
+A peer-based assistance mesh means the nearest verified gig worker gets a nudge when an alert triggers. No central call centre. No 22-minute holds. Real people, close by, who understand the job.
+
+This is what infrastructure looks like when you build it for the people who actually need it — not for the quarterly report.`,
+      },
+      {
+        id: 2,
+        slug: "tier2-risk",
+        tag: "RESEARCH",
+        title: "Tier-2 Cities: Where Gig Worker Risk Is Highest and Visibility Lowest",
+        date: "Apr 2025",
+        readTime: "5 min read",
+        author: "Secured Systems Editorial",
+        body: `Kanpur. Lucknow. Patna. Coimbatore. These cities don't make the safety headlines. They should.
+
+As quick commerce and food delivery platforms expand aggressively into India's tier-2 cities, they're replicating metro-level operations without metro-level infrastructure. The result is a gig workforce operating in cities with weaker emergency response, fewer hospitals per capita, and virtually no platform safety presence.
+
+**The Expansion Playbook**
+
+Platforms like Blinkit and Zepto reported a 120% surge in orders during the 2025 festive season, driven largely by tier-2 expansion. This is extraordinary growth — but it's worker growth without welfare growth.
+
+In Mumbai, a delivery worker in distress is 15 minutes from a government hospital. In Kanpur, that number can triple. Response time in an emergency isn't just a statistic — it's survival.
+
+**What the Data Shows**
+
+Of India's 12 million gig workers, the metro-focused data dramatically underrepresents tier-2 reality. Bangalore has ~234,000 app-based gig workers. Delhi has ~225,000. Mumbai, ~133,000. These numbers are tracked, studied, cited.
+
+Kanpur's gig workforce? No published estimate. No safety study. No platform disclosure.
+
+Invisibility is the most dangerous condition a worker can be in.
+
+**Sentinel's Tier-2 Pilot**
+
+Kanpur is one of Sentinel's four pilot cities precisely because of this gap. The real validation of any safety system happens in the city where conditions are hardest — not where it's easiest to look good.
+
+Our tier-2 data will become the evidence base for a category that currently has none.`,
+      },
+    ];
+
+    const SENTINEL_METRICS = [
+      { value: "200", label: "Downloads", icon: "↓" },
+      { value: "4", label: "Cities Targeted", icon: "◎" },
+      { value: "100", label: "Pilot Workers Onboarded", icon: "◈" },
+      { value: "50", label: "Real-time Alerts Triggered", icon: "⚡" },
+      { value: "<10 min", label: "Theoretical Response Time", icon: "⏱" },
+      { value: "2025", label: "Founded", icon: "◆" },
+    ];
+
+    const CITY_DATA = [
+      { city: "Mumbai", workers: "133,000+", status: "Active Pilot" },
+      { city: "Delhi", workers: "225,000+", status: "Active Pilot" },
+      { city: "Bangalore", workers: "234,000+", status: "Active Pilot" },
+      { city: "Kanpur", workers: "Tier-2 Validation", status: "Active Pilot" },
+    ];
+
+    // ─── REUSABLE UI COMPONENTS ─────────────────────────────────────
+    function Tag({ children, color = C.accent }) {
+      return (
+        <span style={{
+          fontFamily: "'IBM Plex Mono', monospace", fontSize: "10px",
+          letterSpacing: "0.15em", textTransform: "uppercase",
+          color, background: `${color}18`,
+          border: `1px solid ${color}33`,
+          padding: "3px 8px", borderRadius: "2px",
+        }}>{children}</span>
+      );
+    }
+
+    function Btn({ children, onClick, variant = "primary", small, style = {} }) {
+      const base = {
+        border: "none", borderRadius: "5px", cursor: "pointer",
+        fontFamily: "'IBM Plex Sans', sans-serif",
+        fontWeight: 500, letterSpacing: "0.03em",
+        transition: "all 0.15s",
+        padding: small ? "7px 16px" : "11px 24px",
+        fontSize: small ? "12px" : "13px",
+        ...style,
+      };
+      if (variant === "primary") return <button onClick={onClick} style={{ ...base, background: `linear-gradient(135deg, ${C.accent}, #1D4ED8)`, color: C.white }}>{children}</button>;
+      if (variant === "ghost") return <button onClick={onClick} style={{ ...base, background: "none", border: `1px solid ${C.borderHi}`, color: C.steelHi }}>{children}</button>;
+      return <button onClick={onClick} style={base}>{children}</button>;
+    }
+
+    // ─── NAVIGATION ─────────────────────────────────────────────────
+    function Nav({ page, setPage }) {
+      const [scrolled, setScrolled] = useState(false);
+      useEffect(() => {
+        const fn = () => setScrolled(window.scrollY > 30);
+        window.addEventListener("scroll", fn);
+        return () => window.removeEventListener("scroll", fn);
+      }, []);
+      return (
+        <nav style={{
+          position: "fixed", top: 0, left: 0, right: 0, zIndex: 200,
+          background: scrolled ? "rgba(6,9,15,0.96)" : "transparent",
+          backdropFilter: scrolled ? "blur(14px)" : "none",
+          borderBottom: scrolled ? `1px solid ${C.border}` : "none",
+          transition: "all 0.3s", padding: "0 48px",
+          display: "flex", alignItems: "center", justifyContent: "space-between", height: "60px",
+        }}>
+          <button onClick={() => setPage("home")} style={{ background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: "10px" }}>
+            <div style={{ width: "30px", height: "30px", background: `linear-gradient(135deg, ${C.accent}, #1D4ED8)`, borderRadius: "5px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M8 1.5L13 4.5V9C13 11.8 10.8 14.2 8 15C5.2 14.2 3 11.8 3 9V4.5L8 1.5Z" stroke="white" strokeWidth="1.2" fill="none"/>
+                <circle cx="8" cy="9" r="1.8" fill="white"/>
+              </svg>
+            </div>
+            <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "17px", fontWeight: 600, color: C.text, letterSpacing: "0.04em" }}>SecuredSystems<span style={{ color: C.accentBright, fontFamily: "'IBM Plex Mono', monospace", fontSize: "13px" }}>.in</span></span>
+          </button>
+          <div style={{ display: "flex", gap: "28px", alignItems: "center" }}>
+            {[["home", "Awareness"], ["sentinel", "Sentinel"], ["blogs", "Blog"], ["about", "About"]].map(([p, label]) => (
+              <button key={p} onClick={() => setPage(p)} style={{
+                background: "none", border: "none", cursor: "pointer",
+                fontFamily: "'IBM Plex Mono', monospace", fontSize: "11px",
+                letterSpacing: "0.12em", textTransform: "uppercase",
+                color: page === p ? C.accentBright : C.steel,
+                borderBottom: page === p ? `1px solid ${C.accentBright}` : "1px solid transparent",
+                paddingBottom: "2px", transition: "color 0.15s",
+              }}>{label}</button>
+            ))}
+          </div>
+        </nav>
+      );
+    }
+
+    // ─── HOME PAGE ──────────────────────────────────────────────────
+    function HomePage({ stats, cases, news, blogs, setPage, setActiveBlog }) {
+      return (
+        <div style={{ paddingTop: "60px" }}>
+          {/* Hero */}
+          <div style={{
+            minHeight: "92vh", display: "flex", flexDirection: "column",
+            alignItems: "center", justifyContent: "center", textAlign: "center",
+            padding: "80px 48px 60px", position: "relative", overflow: "hidden",
+            background: `radial-gradient(ellipse 80% 60% at 50% 0%, ${C.accentGlow}, transparent)`,
+          }}>
+            <div style={{ marginBottom: "18px" }}><Tag>// The Gig Worker Safety Crisis — India</Tag></div>
+            <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(38px, 6.5vw, 78px)", fontWeight: 700, lineHeight: 1.08, color: C.text, maxWidth: "860px", marginBottom: "22px", letterSpacing: "-0.01em" }}>Millions Work.<br /><span style={{ color: C.accentBright }}>None Are Protected.</span></h1>
+            <p style={{ fontSize: "17px", color: C.muted, maxWidth: "500px", lineHeight: 1.75, marginBottom: "40px" }}>India has 12 million gig workers. Platforms track their every move — but build zero safety infrastructure around them. We're here to fix that.</p>
+            <div style={{ display: "flex", gap: "14px", flexWrap: "wrap", justifyContent: "center" }}>
+              <Btn onClick={() => setPage("sentinel")}>See Sentinel →</Btn>
+              <Btn variant="ghost" onClick={() => document.getElementById("awareness")?.scrollIntoView({ behavior: "smooth" })}>View the Crisis ↓</Btn>
+            </div>
+            <div style={{ display: "flex", marginTop: "72px", border: `1px solid ${C.border}`, borderRadius: "8px", background: C.surface, overflow: "hidden", flexWrap: "wrap" }}>
+              {stats.slice(0, 4).map((s, i) => (
+                <div key={s.id} style={{ padding: "18px 28px", textAlign: "center", borderRight: i < 3 ? `1px solid ${C.border}` : "none", minWidth: "140px" }}>
+                  <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "24px", fontWeight: 700, color: C.accentBright }}>{s.value}</div>
+                  <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: "10px", color: C.dim, marginTop: "3px", letterSpacing: "0.05em" }}>{s.label.split("—")[0].trim()}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Stats grid */}
+          <section id="awareness" style={{ padding: "80px 48px", maxWidth: "1100px", margin: "0 auto" }}>
+            <div style={{ marginBottom: "12px" }}><Tag>// Data</Tag></div>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(26px, 4vw, 44px)", fontWeight: 700, marginBottom: "40px" }}>The Numbers That<br /><span style={{ color: C.accentBright }}>Don't Lie</span></h2>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "14px" }}>
+              {stats.map(s => (
+                <div key={s.id} style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: "8px", padding: "24px 22px", transition: "all 0.2s" }}>
+                  <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "34px", fontWeight: 700, color: C.accentBright, marginBottom: "6px" }}>{s.value}</div>
+                  <div style={{ fontSize: "13px", color: C.text, marginBottom: "8px", lineHeight: 1.4 }}>{s.label}</div>
+                  <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: "10px", color: C.dim }}>Source: {s.source}</div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Cases */}
+          <section style={{ padding: "0 48px 80px", maxWidth: "1100px", margin: "0 auto" }}>
+            <div><Tag color={C.danger}>// Documented Cases</Tag></div>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(24px, 3.5vw, 38px)", fontWeight: 700, marginBottom: "32px" }}>Real Workers.<br /><span style={{ color: C.danger }}>Real Failures.</span></h2>
+            <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+              {cases.map(c => (
+                <div key={c.id} style={{ background: C.surface, border: `1px solid ${C.border}`, borderLeft: `3px solid ${C.danger}`, borderRadius: "8px", padding: "22px 24px", display: "flex", gap: "20px", flexWrap: "wrap" }}>
+                  <div style={{ minWidth: "100px" }}><Tag color={C.danger}>{c.tag}</Tag><div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: "10px", color: C.dim, marginTop: "8px" }}>{c.city} · {c.date}</div></div>
+                  <div style={{ flex: 1, minWidth: "200px" }}><div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "18px", fontWeight: 600, marginBottom: "6px" }}>{c.title}</div><div style={{ fontSize: "13px", color: C.muted, lineHeight: 1.65 }}>{c.desc}</div></div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* News */}
+          <section style={{ padding: "0 48px 80px", maxWidth: "1100px", margin: "0 auto" }}>
+            <div><Tag color={C.amber}>// Press & Coverage</Tag></div>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(24px, 3.5vw, 38px)", fontWeight: 700, marginBottom: "32px" }}>The World Is<br /><span style={{ color: C.amber }}>Starting to Notice</span></h2>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "14px" }}>
+              {news.map(n => (
+                <div key={n.id} style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: "8px", padding: "24px 22px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "12px" }}><Tag color={C.amber}>{n.source}</Tag><span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: "10px", color: C.dim }}>{n.date}</span></div>
+                  <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "17px", fontWeight: 600, marginBottom: "10px" }}>{n.title}</div>
+                  <div style={{ fontSize: "12px", color: C.muted, lineHeight: 1.6 }}>{n.summary}</div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Blog preview */}
+          <section style={{ padding: "0 48px 80px", maxWidth: "1100px", margin: "0 auto" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "32px", flexWrap: "wrap" }}>
+              <div><div style={{ marginBottom: "10px" }}><Tag>// Latest from the Blog</Tag></div><h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(24px, 3.5vw, 38px)", fontWeight: 700 }}>Raising Awareness.<br /><span style={{ color: C.accentBright }}>One Story at a Time.</span></h2></div>
+              <Btn variant="ghost" small onClick={() => setPage("blogs")}>All Posts →</Btn>
+            </div>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "14px" }}>
+              {blogs.slice(0, 3).map(b => (
+                <div key={b.id} style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: "8px", padding: "26px 22px", cursor: "pointer" }} onClick={() => { setActiveBlog(b); setPage("blog"); }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px" }}><Tag>{b.tag}</Tag><span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: "10px", color: C.dim }}>{b.readTime}</span></div>
+                  <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "19px", fontWeight: 600, marginBottom: "10px" }}>{b.title}</h3>
+                  <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: "10px", color: C.dim }}>{b.date} · {b.author}</div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Footer */}
+          <footer style={{ borderTop: `1px solid ${C.border}`, padding: "28px 48px", display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: "12px" }}>
+            <span style={{ fontSize: "12px", color: C.dim }}>© 2025 SecuredSystems.in — Secured Systems Pvt. Ltd.</span>
+            <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: "10px", color: C.dim, letterSpacing: "0.1em" }}>SAFETY INTELLIGENCE · INDIA</span>
+          </footer>
+        </div>
+      );
+    }
+
+    // ─── BLOG LIST PAGE ─────────────────────────────────────────────
+    function BlogsPage({ blogs, setPage, setActiveBlog }) {
+      return (
+        <div style={{ paddingTop: "100px", maxWidth: "900px", margin: "0 auto", padding: "100px 48px 80px" }}>
+          <div style={{ marginBottom: "12px" }}><Tag>// Blog</Tag></div>
+          <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(30px, 5vw, 52px)", fontWeight: 700, color: C.text, marginBottom: "12px", lineHeight: 1.1 }}>Intelligence &<br /><span style={{ color: C.accentBright }}>Awareness</span></h1>
+          <p style={{ fontSize: "15px", color: C.muted, marginBottom: "48px", lineHeight: 1.7 }}>Research, field reports, and analysis on gig worker safety in India.</p>
+          <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+            {blogs.map(b => (
+              <div key={b.id} style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: "8px", padding: "26px 28px", cursor: "pointer", display: "flex", gap: "24px", alignItems: "flex-start" }} onClick={() => { setActiveBlog(b); setPage("blog"); }}>
+                <div style={{ minWidth: "80px" }}><Tag>{b.tag}</Tag><div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: "10px", color: C.dim, marginTop: "8px" }}>{b.date}</div></div>
+                <div style={{ flex: 1 }}><h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "20px", fontWeight: 600, marginBottom: "6px" }}>{b.title}</h3><div style={{ fontSize: "12px", color: C.muted }}>{b.readTime} · {b.author}</div></div>
+                <span style={{ color: C.accentBright, fontSize: "18px" }}>→</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      );
+    }
+
+    // ─── SINGLE BLOG PAGE ───────────────────────────────────────────
+    function BlogPage({ blog, setPage }) {
+      const formatted = (blog.body || "").split("\n\n").map((para, i) => {
+        if (para.startsWith("**") && para.endsWith("**")) {
+          return <h3 key={i} style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "24px", fontWeight: 700, color: C.text, margin: "32px 0 14px" }}>{para.replace(/\*\*/g, "")}</h3>;
+        }
+        return <p key={i} style={{ fontSize: "16px", color: C.muted, lineHeight: 1.85, marginBottom: "18px" }}>{para}</p>;
+      });
+      return (
+        <div style={{ paddingTop: "60px", maxWidth: "720px", margin: "0 auto", padding: "100px 48px 80px" }}>
+          <button onClick={() => setPage("blogs")} style={{ background: "none", border: "none", cursor: "pointer", color: C.muted, fontFamily: "'IBM Plex Mono', monospace", fontSize: "11px", letterSpacing: "0.1em", marginBottom: "32px", display: "flex", alignItems: "center", gap: "6px" }}>← BACK TO BLOG</button>
+          <div style={{ marginBottom: "14px" }}><Tag>{blog.tag}</Tag></div>
+          <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(28px, 4.5vw, 44px)", fontWeight: 700, lineHeight: 1.12, marginBottom: "18px" }}>{blog.title}</h1>
+          <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: "11px", color: C.dim, marginBottom: "48px", paddingBottom: "28px", borderBottom: `1px solid ${C.border}` }}>{blog.date} · {blog.readTime} · {blog.author}</div>
+          <div>{formatted}</div>
+        </div>
+      );
+    }
+
+    // ─── SENTINEL PAGE ──────────────────────────────────────────────
+    function SentinelPage() {
+      const roadmap = [
+        { phase: "Phase 1 — Now", label: "Sentinel App", desc: "Passive safety intelligence for gig workers. No active input. Always on.", active: true },
+        { phase: "Phase 2 — 2026", label: "Watch Interface", desc: "Hardware wearable layer with biometric alerts and direct peer pings.", active: false },
+        { phase: "Phase 3 — 2027", label: "B2C Platform", desc: "Direct-to-worker safety subscription with insurance integration.", active: false },
+      ];
+      return (
+        <div style={{ paddingTop: "60px" }}>
+          <div style={{ padding: "80px 48px 60px", textAlign: "center", background: `radial-gradient(ellipse 70% 50% at 50% 0%, ${C.accentGlow}, transparent)` }}>
+            <div style={{ marginBottom: "16px" }}><Tag>// Sentinel by Secured Systems</Tag></div>
+            <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(34px, 6vw, 68px)", fontWeight: 700, lineHeight: 1.1, marginBottom: "20px" }}>Passive Safety.<br /><span style={{ color: C.accentBright }}>Always On.</span></h1>
+            <p style={{ fontSize: "16px", color: C.muted, maxWidth: "480px", margin: "0 auto 40px", lineHeight: 1.75 }}>No button to press. No check-in to remember. Sentinel watches quietly — and acts when it matters.</p>
+            <a href="https://forms.gle/TjvLfByxoPgep1w97" target="_blank" rel="noopener noreferrer" style={{ background: `linear-gradient(135deg, ${C.accent}, #1D4ED8)`, borderRadius: "5px", padding: "11px 24px", fontSize: "13px", color: C.white, display: "inline-block", fontFamily: "'IBM Plex Sans', sans-serif", fontWeight: 500 }}>Join the Pilot →</a>
+          </div>
+
+          <section style={{ padding: "60px 48px", maxWidth: "1100px", margin: "0 auto" }}>
+            <div><Tag>// Live Adoption Metrics</Tag></div>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(22px, 3vw, 34px)", fontWeight: 700, marginBottom: "28px" }}>Where We Are Today</h2>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(170px, 1fr))", gap: "12px" }}>
+              {SENTINEL_METRICS.map((m, i) => (
+                <div key={i} style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: "8px", padding: "22px 18px", textAlign: "center" }}>
+                  <div style={{ fontSize: "22px", marginBottom: "8px", color: C.accentBright }}>{m.icon}</div>
+                  <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "26px", fontWeight: 700, color: C.accentBright, marginBottom: "4px" }}>{m.value}</div>
+                  <div style={{ fontSize: "12px", color: C.muted }}>{m.label}</div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section style={{ padding: "0 48px 60px", maxWidth: "1100px", margin: "0 auto" }}>
+            <div><Tag>// Target Cities</Tag></div>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(22px, 3vw, 34px)", fontWeight: 700, marginBottom: "24px" }}>Pilot Coverage</h2>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "12px" }}>
+              {CITY_DATA.map((c, i) => (
+                <div key={i} style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: "8px", padding: "20px 18px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "10px" }}>
+                    <span style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "20px", fontWeight: 700 }}>{c.city}</span>
+                    <Tag color={C.green}>{c.status}</Tag>
+                  </div>
+                  <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: "11px", color: C.muted }}>{c.workers} addressable workers</div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section style={{ padding: "0 48px 60px", maxWidth: "1100px", margin: "0 auto" }}>
+            <div><Tag>// How Sentinel Works</Tag></div>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(22px, 3vw, 34px)", fontWeight: 700, marginBottom: "28px" }}>Passive. Peer-Backed. Precise.</h2>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "14px" }}>
+              {[
+                { n: "01", title: "Passive Monitoring", desc: "Sentinel runs silently. Motion, location, and behavioral signals are analyzed continuously — no worker input needed." },
+                { n: "02", title: "Anomaly Detection", desc: "When patterns deviate — unusual stillness, route deviation — the system flags it within the theoretical 10-minute window." },
+                { n: "03", title: "Peer Mesh Alert", desc: "The nearest verified gig worker gets a peer ping. No call centre. Real people, close by." },
+                { n: "04", title: "Incident Log", desc: "Every alert is logged and stored. Building India's first gig worker safety incident database." },
+              ].map(s => (
+                <div key={s.n} style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: "8px", padding: "26px 22px" }}>
+                  <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: "11px", color: C.accentBright, marginBottom: "12px" }}>{s.n}</div>
+                  <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "18px", fontWeight: 700, marginBottom: "8px" }}>{s.title}</h3>
+                  <p style={{ fontSize: "13px", color: C.muted, lineHeight: 1.65 }}>{s.desc}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section style={{ padding: "0 48px 80px", maxWidth: "1100px", margin: "0 auto" }}>
+            <div><Tag>// Product Roadmap</Tag></div>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(22px, 3vw, 34px)", fontWeight: 700, marginBottom: "28px" }}>Sentinel Is Phase One</h2>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0" }}>
+              {roadmap.map((r, i) => (
+                <div key={i} style={{ display: "flex", gap: "24px" }}>
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "40px" }}>
+                    <div style={{ width: "14px", height: "14px", borderRadius: "50%", background: r.active ? C.accentBright : C.border, border: `2px solid ${r.active ? C.accentBright : C.dim}`, marginTop: "5px" }} />
+                    {i < roadmap.length - 1 && <div style={{ width: "1px", height: "52px", background: C.border }} />}
+                  </div>
+                  <div style={{ paddingBottom: "28px" }}>
+                    <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: "10px", color: r.active ? C.accentBright : C.dim }}>{r.phase}</div>
+                    <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "20px", fontWeight: 700, color: r.active ? C.text : C.steel, marginBottom: "4px" }}>{r.label}</div>
+                    <p style={{ fontSize: "13px", color: C.muted, lineHeight: 1.6 }}>{r.desc}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        </div>
+      );
+    }
+
+    // ─── ABOUT PAGE ─────────────────────────────────────────────────
+    function AboutPage({ setPage }) {
+      const values = [
+        { n: "01", title: "Passive First", desc: "Safety should require zero effort from the worker. No buttons, no check-ins, no cognitive load on people who are already managing a dangerous job." },
+        { n: "02", title: "Peer Before Platform", desc: "The nearest gig worker will always respond faster than a call centre. We build peer-first systems because the community is the infrastructure." },
+        { n: "03", title: "Tier-2 Honest", desc: "Real validation happens where it's hardest. We pilot in Kanpur for the same reason you stress-test a bridge — if it holds there, it holds everywhere." },
+        { n: "04", title: "Data With Purpose", desc: "Every alert, every incident log, every anomaly is evidence. We're building India's first gig worker safety dataset — and using it to change policy." },
+      ];
+      const team = [
+        { name: "Arav", role: "Co-Founder & CEO", photo: "https://randomuser.me/api/portraits/men/32.jpg", bio: "BCA student, AI/ML practitioner, and FMCG operator. Building at the intersection of technology and underserved markets." },
+        { name: "Ashutosh Trivedi", role: "Co-Founder & CTO", photo: "https://randomuser.me/api/portraits/men/45.jpg", bio: "Technology lead and strategy architect. Focused on turning Sentinel's passive intelligence layer into the definitive safety standard for India's gig platforms." },
+      ];
+      return (
+        <div style={{ paddingTop: "60px" }}>
+          <div style={{ padding: "80px 48px 60px", textAlign: "center", background: `radial-gradient(ellipse 70% 50% at 50% 0%, ${C.accentGlow}, transparent)` }}>
+            <div><Tag>// About Secured Systems</Tag></div>
+            <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(34px, 6vw, 64px)", fontWeight: 700, marginBottom: "20px" }}>We Exist Because<br /><span style={{ color: C.accentBright }}>Someone Has To</span></h1>
+            <p style={{ fontSize: "16px", color: C.muted, maxWidth: "520px", margin: "0 auto", lineHeight: 1.8 }}>Secured Systems was founded in 2025 with one conviction: that the people powering India's gig economy deserve the same safety infrastructure as anyone else in the workforce.</p>
+          </div>
+          <section style={{ padding: "60px 48px", maxWidth: "1100px", margin: "0 auto" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "40px", alignItems: "center" }}>
+              <div><div><Tag>// Mission</Tag></div><h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(24px, 3.5vw, 38px)", fontWeight: 700, marginBottom: "20px" }}>Build the Safety Layer<br />That Platforms Refused To</h2><p style={{ fontSize: "15px", color: C.muted, lineHeight: 1.8 }}>Platforms have the data, the reach, the engineering talent. What they don't have is the incentive — because safety costs money and liability costs more. We're building the passive intelligence layer underneath everything — starting with Sentinel, expanding into wearable hardware and direct B2C services.</p></div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                {[{ v: "2025", l: "Founded" }, { v: "4", l: "Pilot Cities" }, { v: "100", l: "Workers Onboarded" }, { v: "12M+", l: "Workers We Exist For" }].map(s => (
+                  <div key={s.l} style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: "8px", padding: "22px 18px", textAlign: "center" }}>
+                    <div style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "28px", fontWeight: 700, color: C.accentBright }}>{s.v}</div>
+                    <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: "10px", color: C.dim }}>{s.l}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </section>
+          <section style={{ padding: "0 48px 60px", maxWidth: "1100px", margin: "0 auto" }}>
+            <div><Tag>// What We Stand For</Tag></div>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(22px, 3vw, 34px)", fontWeight: 700, marginBottom: "28px" }}>Principles We Build By</h2>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: "14px" }}>
+              {values.map(v => (
+                <div key={v.n} style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: "8px", padding: "26px 22px" }}>
+                  <div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: "11px", color: C.accentBright, marginBottom: "12px" }}>{v.n}</div>
+                  <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "18px", fontWeight: 700, marginBottom: "10px" }}>{v.title}</h3>
+                  <p style={{ fontSize: "13px", color: C.muted, lineHeight: 1.7 }}>{v.desc}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+          <section style={{ padding: "0 48px 60px", maxWidth: "1100px", margin: "0 auto" }}>
+            <div><Tag>// The Team</Tag></div>
+            <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "clamp(22px, 3vw, 34px)", fontWeight: 700, marginBottom: "28px" }}>Who's Building This</h2>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "16px" }}>
+              {team.map(m => (
+                <div key={m.name} style={{ background: C.surface, border: `1px solid ${C.border}`, borderRadius: "8px", padding: "28px 24px" }}>
+                  <div style={{ display: "flex", gap: "16px", alignItems: "center", marginBottom: "16px" }}>
+                    <img src={m.photo} alt={m.name} style={{ width: "64px", height: "64px", borderRadius: "50%", objectFit: "cover", border: `2px solid ${C.accent}44` }} />
+                    <div><div style={{ fontSize: "15px", fontWeight: 600 }}>{m.name}</div><div style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: "10px", color: C.accent }}>{m.role}</div></div>
+                  </div>
+                  <p style={{ fontSize: "13px", color: C.muted, lineHeight: 1.7 }}>{m.bio}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+          <footer style={{ borderTop: `1px solid ${C.border}`, padding: "28px 48px", display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: "12px" }}>
+            <span style={{ fontSize: "12px", color: C.dim }}>© 2025 SecuredSystems.in — Secured Systems Pvt. Ltd.</span>
+            <span style={{ fontFamily: "'IBM Plex Mono', monospace", fontSize: "10px", color: C.dim, letterSpacing: "0.1em" }}>SAFETY INTELLIGENCE · INDIA</span>
+          </footer>
+        </div>
+      );
+    }
+
+    // ─── ROOT APP ───────────────────────────────────────────────────
+    function App() {
+      const [page, setPage] = useState("home");
+      const [activeBlog, setActiveBlog] = useState(null);
+      const [stats] = useState(SEED_STATS);
+      const [cases] = useState(SEED_CASES);
+      const [news] = useState(SEED_NEWS);
+      const [blogs] = useState(SEED_BLOGS);
+      const [loaded, setLoaded] = useState(true);
+
+      return (
+        <div style={{ background: C.bg, minHeight: "100vh" }}>
+          <Nav page={page} setPage={setPage} />
+          {page === "home" && <HomePage stats={stats} cases={cases} news={news} blogs={blogs} setPage={setPage} setActiveBlog={setActiveBlog} />}
+          {page === "blogs" && <BlogsPage blogs={blogs} setPage={setPage} setActiveBlog={setActiveBlog} />}
+          {page === "blog" && activeBlog && <BlogPage blog={activeBlog} setPage={setPage} />}
+          {page === "sentinel" && <SentinelPage />}
+          {page === "about" && <AboutPage setPage={setPage} />}
+        </div>
+      );
+    }
+
+    ReactDOM.render(<App />, document.getElementById('root'));
+  </script>
+</body>
+</html>
